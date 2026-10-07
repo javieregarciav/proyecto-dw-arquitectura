@@ -1,0 +1,35 @@
+services:
+  web:
+    build:
+      context: ./app
+      args:
+        APP_ENV: ${APP_ENV:-local}
+    ports:
+      - "8080:80"
+    env_file:
+      - path: ./app/.env
+        required: false
+    volumes:
+      - ./app/src:/var/www/html/src
+      - ./app/public:/var/www/html/public
+      - ./app/tests:/var/www/html/tests
+      - ./app/bin:/var/www/html/bin
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7.0
+    command: ["--wiredTigerCacheSizeGB", "0.25"]
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
