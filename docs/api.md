@@ -115,6 +115,10 @@ Respuesta `200 OK`:
 
 Errores: 400, 401, 404, 405, 409, 415.
 
+Si el Arduino reintenta un ACK cuya primera respuesta se perdió, el mensaje ya está en
+EMITIDO y recibe **409**. En `confirmarConReintentos` un 409 se trata como confirmado y se
+dejan de hacer reintentos.
+
 ## Para el dashboard (Integrante C)
 
 ```php
