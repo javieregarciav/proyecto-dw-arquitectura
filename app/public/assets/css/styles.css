@@ -1,0 +1,358 @@
+/* Tablero del letrero. Sin dependencias externas (CSP: default-src 'self'). */
+
+:root {
+    --fondo: #e4ebe8;
+    --panel: #fbfdfc;
+    --tinta: #16231f;
+    --tinta-suave: #4d5f5a;
+    --linea: #c3d0cc;
+    --borde-campo: #7f948e;
+
+    /* Verde de placa de circuito: el color de los controles. */
+    --pcb: #0b6b5d;
+    --pcb-oscuro: #07463d;
+    --pcb-claro: #d6e9e4;
+
+    /* El rojo queda reservado para la luz: LEDs y avisos. */
+    --led-on: #ff3b30;
+    --led-off: #3a1c1c;
+    --placa: #101614;
+
+    --foco: #ff9f0a;
+    --error: #b3261e;
+    --espacio: 1rem;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--tinta);
+    font-family: "Avenir Next", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    line-height: 1.5;
+}
+
+:focus-visible {
+    outline: 3px solid var(--foco);
+    outline-offset: 2px;
+}
+
+/* ---------- Pagina ---------- */
+
+.pagina {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 1.5rem var(--espacio) 2rem;
+}
+
+.pagina__encabezado {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.pagina__titulo {
+    margin: 0;
+    font-size: clamp(2rem, 7vw, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+}
+
+.pagina__subtitulo {
+    max-width: 32rem;
+    margin: 0.75rem auto 1.25rem;
+    color: var(--tinta-suave);
+}
+
+.pagina__enlace {
+    display: inline-block;
+    padding: 0.5rem 1.1rem;
+    border: 2px solid var(--pcb);
+    border-radius: 0.4rem;
+    color: var(--pcb);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.pagina__enlace:hover {
+    background: var(--pcb-claro);
+}
+
+.pagina__contenido {
+    display: grid;
+    gap: var(--espacio);
+}
+
+/* ---------- Panel ---------- */
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    border: 1px solid var(--linea);
+    border-radius: 0.5rem;
+    background: var(--panel);
+}
+
+.panel__titulo {
+    margin: 0 0 var(--espacio);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* ---------- Formulario ---------- */
+
+.formulario {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--espacio);
+}
+
+.formulario__campo {
+    display: grid;
+    gap: 0.3rem;
+}
+
+.formulario__etiqueta {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.formulario__entrada {
+    width: 100%;
+    padding: 0.6rem 0.25rem;
+    border: 0;
+    border-bottom: 2px solid var(--tinta);
+    border-radius: 0;
+    background: transparent;
+    color: var(--tinta);
+    font: inherit;
+    font-size: 1.05rem;
+    transition: background-color 120ms, box-shadow 120ms;
+}
+
+.formulario__entrada:focus-visible {
+    outline: none;
+    border-bottom-color: var(--pcb);
+    background: rgba(11, 107, 93, 0.08);
+    box-shadow: 0 1px 0 var(--pcb);
+}
+.formulario__contador {
+    margin: 0;
+    color: var(--tinta-suave);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+/* El boton se lee como una tecla: se hunde al presionarlo. */
+.formulario__boton {
+    align-self: center;
+    margin: auto 0 0;
+    padding: 0.7rem 2rem;
+    border: 2px solid var(--pcb);
+    border-radius: 0.4rem;
+    background: transparent;
+    color: var(--pcb);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 120ms, color 120ms;
+}
+
+.formulario__boton:hover {
+    background: var(--pcb);
+    color: #fff;
+}
+
+.formulario__boton:disabled {
+    border-color: #9db0ab;
+    background: transparent;
+    color: #7d908b;
+    cursor: not-allowed;
+}
+
+.formulario__estado {
+    margin: 0;
+    min-height: 1.5rem;
+}
+
+.formulario__estado--ok {
+    color: var(--pcb);
+    font-weight: 600;
+}
+
+.formulario__estado--error {
+    color: var(--error);
+    font-weight: 600;
+}
+
+/* ---------- Matriz 8 x 8 (simulador) ---------- */
+
+.matriz {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.5rem;
+    width: min(100%, 22rem);
+    margin: 0 auto;
+    padding: 0.9rem;
+    border: 4px solid #2b3834;
+    border-radius: 0.9rem;
+    background: var(--placa);
+}
+
+.matriz__led {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--led-off);
+}
+
+.matriz__led--on {
+    background: var(--led-on);
+    box-shadow: 0 0 0.5rem var(--led-on);
+}
+
+/* ---------- Pantallas anchas: formulario y simulador lado a lado, misma altura ---------- */
+
+@media (min-width: 48rem) {
+    .pagina__contenido {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ---------- Dashboard: filtros y tabla ---------- */
+
+.pagina > .panel {
+    margin-bottom: var(--espacio);
+}
+
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: var(--espacio);
+}
+
+.filtros__opcion {
+    padding: 0.3rem 0.8rem;
+    border: 1.5px solid var(--borde-campo);
+    border-radius: 0.4rem;
+    color: var(--tinta);
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+.filtros__opcion:hover {
+    background: var(--pcb-claro);
+}
+
+.filtros__opcion--activa,
+.filtros__opcion--activa:hover {
+    border-color: var(--pcb);
+    background: var(--pcb);
+    color: #fff;
+}
+
+/* La tabla se desliza dentro de su caja: la pagina nunca scrollea de lado. */
+.tabla__contenedor {
+    overflow-x: auto;
+}
+
+.tabla {
+    width: 100%;
+    min-width: 40rem;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.tabla th,
+.tabla td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--linea);
+    text-align: left;
+    vertical-align: top;
+}
+
+.tabla th {
+    border-bottom: 2px solid var(--pcb);
+    background: #eaf2ef;
+}
+
+.tabla__id {
+    font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.estado {
+    display: inline-block;
+    padding: 0.125rem 0.625rem;
+    border-radius: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.estado--pendiente {
+    background: #fff3cd;
+    color: #664d03;
+}
+
+.estado--procesando {
+    background: #cfe2ff;
+    color: #052c65;
+}
+
+.estado--emitido {
+    background: #d1e7dd;
+    color: #0a3622;
+}
+
+/* ---------- Estado del dispositivo ---------- */
+
+.dispositivo {
+    margin: 0 0 0.5rem;
+}
+
+.dispositivo:last-child {
+    margin-bottom: 0;
+}
+
+.dispositivo__punto {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-right: 0.5rem;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+.dispositivo--en-linea .dispositivo__punto {
+    background: #1b8a4b;
+    box-shadow: 0 0 0.4rem #1b8a4b;
+}
+
+.dispositivo--sin-conexion .dispositivo__punto {
+    background: var(--led-on);
+}
+
+.dispositivo__detalle,
+.dispositivo__vacio {
+    color: var(--tinta-suave);
+    font-size: 0.875rem;
+}
+
+.dispositivo__vacio {
+    margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .formulario__boton {
+        transition: none;
+    }
+}
