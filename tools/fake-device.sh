@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Dispositivo simulado: hace exactamente lo que hará el Arduino.
-# Uso: TOKEN=<token> ./tools/fake-device.sh
 set -euo pipefail
 
 API="${API:-http://localhost:8080/api}"

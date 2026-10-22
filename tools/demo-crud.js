@@ -1,6 +1,3 @@
-// Demostración del CRUD en vivo sobre mensajes_log.
-// Uso: docker compose exec -T mongo mongosh iot_led --quiet < tools/demo-crud.js
-
 const col = db.mensajes_log;
 
 print('\n1) insertOne: un mensaje nuevo nace en PENDIENTE');

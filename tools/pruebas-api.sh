@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Colección de pruebas con curl contra el contrato de la API.
-# Uso: TOKEN=<token> ./tools/pruebas-api.sh
 set -uo pipefail
 
 API="${API:-http://localhost:8080/api}"
