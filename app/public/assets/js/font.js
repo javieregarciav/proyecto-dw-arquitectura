@@ -1,5 +1,3 @@
-// GENERADO por tools/gen-font.php desde shared/font5x7.json. NO EDITAR A MANO.
-// Cada caracter ASCII 0x20-0x7E tiene 5 columnas; el bit 0 es la fila superior.
 export const FONT_5X7 = {
   " ": [0, 0, 0, 0, 0],
   "!": [0, 0, 95, 0, 0],
