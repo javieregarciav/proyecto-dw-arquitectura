@@ -1,8 +1,3 @@
-// Comunicacion con la API de Integrante B (ver docs/api.md).
-
-// Envia el mensaje. Devuelve { estado, cuerpo }:
-//   estado = codigo HTTP (201, 422, 400...), cuerpo = el JSON de la respuesta (o null).
-// Si no hay red, fetch lanza una excepcion y la maneja quien llama.
 export async function crearMensaje(mensaje, velocidad) {
     const respuesta = await fetch('api/mensaje.php', {
         method: 'POST',
@@ -14,14 +9,11 @@ export async function crearMensaje(mensaje, velocidad) {
     try {
         cuerpo = await respuesta.json();
     } catch {
-        // la respuesta no trae JSON: se queda en null
     }
 
     return { estado: respuesta.status, cuerpo };
 }
 
-// Arma un texto legible a partir de un error de la API:
-// { ok:false, error:{ codigo, mensaje, campos?:{...} } }
 export function textoError(cuerpo, estado) {
     const error = cuerpo?.error;
     if (!error) {

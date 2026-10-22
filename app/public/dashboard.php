@@ -9,19 +9,16 @@ require __DIR__ . '/../vendor/autoload.php';
 
 const LIMITE_HISTORIAL = 50;
 
-/** Escapa un valor antes de imprimirlo en HTML: defensa contra XSS. */
 function e(string $valor): string
 {
     return htmlspecialchars($valor, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 }
 
-/** Fecha en la zona horaria configurada (Guatemala), o un guion si no existe. */
 function fecha(?DateTimeImmutable $fecha, DateTimeZone $zona): string
 {
     return $fecha === null ? '—' : $fecha->setTimezone($zona)->format('d/m/Y H:i:s');
 }
 
-/** Imprime las filas de la tabla (sirve para la pagina completa y para el refresco parcial). */
 function imprimirFilas(array $mensajes, DateTimeZone $zona): void
 {
     if ($mensajes === []) {
@@ -41,7 +38,6 @@ function imprimirFilas(array $mensajes, DateTimeZone $zona): void
     }
 }
 
-/** Imprime el estado de cada dispositivo: en linea (visto hace menos de 30 s) o sin conexion. */
 function imprimirDispositivos(array $dispositivos, DateTimeZone $zona): void
 {
     if ($dispositivos === []) {
@@ -61,14 +57,12 @@ function imprimirDispositivos(array $dispositivos, DateTimeZone $zona): void
     }
 }
 
-$app = Bootstrap::iniciar(); // tambien envia las cabeceras de seguridad
+$app = Bootstrap::iniciar();
 
-// Filtro opcional: ?estado=PENDIENTE | PROCESANDO | EMITIDO.
-// El parametro podria llegar como arreglo (?estado[$ne]=x): solo se acepta un string.
 $filtro = null;
 $parametro = $_GET['estado'] ?? null;
 if (is_string($parametro)) {
-    $filtro = EstadoMensaje::tryFrom($parametro); // si no es un estado valido, queda en null
+    $filtro = EstadoMensaje::tryFrom($parametro);
 }
 
 $mensajes = [];
@@ -78,15 +72,13 @@ try {
         ? $app->mensajes()->listarHistorial(LIMITE_HISTORIAL)
         : $app->mensajes()->listarHistorial(LIMITE_HISTORIAL, $filtro);
 } catch (Throwable $e) {
-    $app->registrarError($e); // el detalle va al log, no a la pantalla
+    $app->registrarError($e);
     $hayError = true;
     http_response_code(500);
 }
 
 $zona = $app->zonaHoraria();
 
-
-// Estado de los dispositivos (si la consulta falla, solo esa parte avisa del error).
 $dispositivos = [];
 $hayErrorDispositivos = false;
 try {
@@ -96,14 +88,11 @@ try {
     $hayErrorDispositivos = true;
 }
 
-// Refresco parcial: solo un fragmento, ya escapado en el servidor, para que el JS lo reemplace.
-//   ?parcial=1            -> las filas de la tabla
-//   ?parcial=dispositivos -> el estado de los dispositivos
 $parcial = is_string($_GET['parcial'] ?? null) ? $_GET['parcial'] : null;
 if ($parcial === '1' || $parcial === 'dispositivos') {
     $falla = $parcial === '1' ? $hayError : $hayErrorDispositivos;
     if ($falla) {
-        http_response_code(500); // cuerpo vacio: el JS deja lo que ya se ve
+        http_response_code(500);
     } else {
         header('Content-Type: text/html; charset=utf-8');
         if ($parcial === '1') {

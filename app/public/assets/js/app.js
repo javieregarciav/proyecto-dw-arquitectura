@@ -1,8 +1,6 @@
-// Formulario: contador, simulador de la matriz y envio a la API.
 import { mostrarTexto } from './simulador.js';
 import { crearMensaje, textoError } from './api.js';
 
-// Mismos valores que el enum Velocidad del backend (ms por columna).
 const VELOCIDADES_MS = { lenta: 150, media: 90, rapida: 50 };
 
 const formulario = document.getElementById('form-mensaje');
@@ -13,7 +11,6 @@ const boton = formulario.querySelector('button[type="submit"]');
 const estadoEnvio = document.getElementById('estado-envio');
 
 function actualizar() {
-    // textContent: nunca innerHTML con texto del usuario.
     contadorActual.textContent = String(entrada.value.length);
     mostrarTexto(entrada.value, VELOCIDADES_MS[selectorVelocidad.value] ?? 90);
 }
@@ -25,7 +22,7 @@ function mostrarEstado(texto, esError) {
 }
 
 async function enviar(evento) {
-    evento.preventDefault(); // que el navegador no recargue la pagina
+    evento.preventDefault();
 
     boton.disabled = true;
     mostrarEstado('Enviando...', false);
@@ -34,7 +31,6 @@ async function enviar(evento) {
         const { estado, cuerpo } = await crearMensaje(entrada.value, selectorVelocidad.value);
 
         if (estado === 201 && cuerpo?.ok) {
-            // El servidor devuelve el texto ya normalizado (mayusculas, sin acentos).
             mostrarEstado(`Mensaje enviado: "${cuerpo.data.mensaje}" (${cuerpo.data.estado}).`, false);
             entrada.value = '';
             actualizar();

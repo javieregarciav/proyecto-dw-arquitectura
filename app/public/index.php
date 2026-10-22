@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-// Cabeceras de seguridad (contrato, seccion 8.2). Con esta CSP no se permite
-// ningun <script> ni <style> en linea: todo el JS y CSS va en assets/.
 header("Content-Security-Policy: default-src 'self'");
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: no-referrer');
 
 const MAX_CARACTERES = 50;
-const TOTAL_LEDS = 64; // rejilla 8 x 8
+const TOTAL_LEDS = 64;
 ?>
 <!DOCTYPE html>
 <html lang="es">

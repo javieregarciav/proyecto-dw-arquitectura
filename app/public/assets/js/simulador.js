@@ -1,18 +1,11 @@
-// Simulador de la matriz 8x8.
-// Usa la misma fuente y el mismo algoritmo que el Arduino:
-//   1) se arma una tira larga de columnas con el texto,
-//   2) una ventana de 8 columnas recorre la tira, avanzando una por tick,
-//   3) lo que cae dentro de la ventana es lo que se enciende.
 import { FONT_5X7 } from './font.js';
 
-const TAMANO = 8; // la matriz es de 8 x 8
+const TAMANO = 8;
 const CLASE_ENCENDIDO = 'matriz__led--on';
 
 let leds = null;
 let temporizador = null;
 
-// Mismas reglas que el servidor, solo para dar respuesta inmediata:
-// mayusculas, acentos y enie a su letra base, espacios colapsados.
 export function normalizar(texto) {
     return texto
         .toUpperCase()
@@ -22,7 +15,6 @@ export function normalizar(texto) {
         .trim();
 }
 
-// 8 vacias + (5 columnas de cada letra + 1 vacia de separacion) + 8 vacias.
 export function construirColumnas(texto) {
     const columnas = new Array(TAMANO).fill(0);
 
@@ -42,8 +34,6 @@ function obtenerLeds() {
     return leds;
 }
 
-// Enciende o apaga los 64 LEDs segun lo que haya en la ventana.
-// Cada byte es una columna; el bit 0 es la fila de arriba.
 function dibujarVentana(columnas, inicio) {
     const todos = obtenerLeds();
 
@@ -69,15 +59,13 @@ export function mostrarTexto(texto, velocidadMs) {
 
     const limpio = normalizar(texto);
     if (limpio === '') {
-        dibujarVentana([], 0); // todo apagado
+        dibujarVentana([], 0);
         return;
     }
 
     const columnas = construirColumnas(limpio);
     const posiciones = columnas.length - TAMANO + 1;
 
-    // En la vista previa se arranca con el texto ya visible (ventana en 8) para
-    // que se vea la respuesta apenas se escribe. El Arduino arranca desde 0.
     let inicio = TAMANO;
     dibujarVentana(columnas, inicio);
 
