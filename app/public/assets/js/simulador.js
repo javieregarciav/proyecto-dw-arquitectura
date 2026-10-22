@@ -3,10 +3,11 @@ import { FONT_5X7 } from './font.js';
 const TAMANO = 8;
 const CLASE_ENCENDIDO = 'matriz__led--on';
 
-let leds = null;
+const leds = document.querySelectorAll('.matriz__led');
+
 let temporizador = null;
 
-export function normalizar(texto) {
+function normalizar(texto) {
     return texto
         .toUpperCase()
         .normalize('NFD')
@@ -15,7 +16,7 @@ export function normalizar(texto) {
         .trim();
 }
 
-export function construirColumnas(texto) {
+function construirColumnas(texto) {
     const columnas = new Array(TAMANO).fill(0);
 
     for (const caracter of texto) {
@@ -27,27 +28,18 @@ export function construirColumnas(texto) {
     return columnas;
 }
 
-function obtenerLeds() {
-    if (leds === null) {
-        leds = document.querySelectorAll('.matriz__led');
-    }
-    return leds;
-}
-
 function dibujarVentana(columnas, inicio) {
-    const todos = obtenerLeds();
-
     for (let col = 0; col < TAMANO; col++) {
         const byte = columnas[inicio + col] ?? 0;
 
         for (let fila = 0; fila < TAMANO; fila++) {
             const encendido = ((byte >> fila) & 1) === 1;
-            todos[fila * TAMANO + col].classList.toggle(CLASE_ENCENDIDO, encendido);
+            leds[fila * TAMANO + col].classList.toggle(CLASE_ENCENDIDO, encendido);
         }
     }
 }
 
-export function detener() {
+function detener() {
     if (temporizador !== null) {
         clearInterval(temporizador);
         temporizador = null;

@@ -68,9 +68,7 @@ if (is_string($parametro)) {
 $mensajes = [];
 $hayError = false;
 try {
-    $mensajes = $filtro === null
-        ? $app->mensajes()->listarHistorial(LIMITE_HISTORIAL)
-        : $app->mensajes()->listarHistorial(LIMITE_HISTORIAL, $filtro);
+    $mensajes = $app->mensajes()->listarHistorial(LIMITE_HISTORIAL, $filtro);
 } catch (Throwable $e) {
     $app->registrarError($e);
     $hayError = true;
