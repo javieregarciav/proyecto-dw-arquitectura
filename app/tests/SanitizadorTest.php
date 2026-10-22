@@ -12,7 +12,6 @@ use PHPUnit\Framework\TestCase;
 
 final class SanitizadorTest extends TestCase
 {
-    /** @return iterable<string, array{string, string}> */
     public static function textosValidos(): iterable
     {
         yield 'mayúsculas'            => ['Bienvenidos a UMG', 'BIENVENIDOS A UMG'];
@@ -31,7 +30,6 @@ final class SanitizadorTest extends TestCase
         self::assertSame($esperado, Sanitizador::texto($entrada));
     }
 
-    /** @return iterable<string, array{mixed}> */
     public static function textosRechazados(): iterable
     {
         yield 'vacío'               => [''];
@@ -55,7 +53,6 @@ final class SanitizadorTest extends TestCase
         self::assertArrayHasKey('mensaje', $e->campos());
     }
 
-    /** @return iterable<string, array{mixed}> */
     public static function tiposIncorrectos(): iterable
     {
         yield 'arreglo' => [['$ne' => '']];
@@ -108,7 +105,6 @@ final class SanitizadorTest extends TestCase
         self::assertSame('66fb1c2e9a1f4b0012ab34cd', (string) Sanitizador::objectId('66fb1c2e9a1f4b0012ab34cd'));
     }
 
-    /** @return iterable<string, array{mixed}> */
     public static function idsInvalidos(): iterable
     {
         yield 'inyección $ne' => [['$ne' => '']];

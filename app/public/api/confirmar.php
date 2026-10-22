@@ -9,7 +9,6 @@ use App\Security\Sanitizador;
 
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
-// POST /api/confirmar.php — ACK del Arduino al terminar la animación: PROCESANDO → EMITIDO.
 Bootstrap::iniciar()->ejecutar(static function (Bootstrap $app): JsonResponse {
     Peticion::exigirMetodo('POST');
     $dispositivo = $app->autenticador()->autenticar(

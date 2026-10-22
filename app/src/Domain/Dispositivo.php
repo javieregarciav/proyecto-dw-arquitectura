@@ -25,19 +25,16 @@ final class Dispositivo
         return hash('sha256', $token);
     }
 
-    /** Compara en tiempo constante para no filtrar información por tiempos de respuesta. */
     public function aceptaToken(string $token): bool
     {
         return hash_equals($this->tokenHash, self::hashToken($token)) && $this->activo;
     }
 
-    /** Copia del dispositivo que recuerda los últimos 4 caracteres del token ya verificado. */
     public function autenticadoCon(string $token): self
     {
         return new self($this->id, $this->tokenHash, $this->activo, $this->ultimoContacto, substr($token, -4));
     }
 
-    /** El token nunca se guarda completo en el log: solo ****XXXX. */
     public function tokenEnmascarado(): string
     {
         return '****' . ($this->sufijoToken ?? '');

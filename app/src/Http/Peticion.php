@@ -6,7 +6,6 @@ namespace App\Http;
 
 use JsonException;
 
-/** Lectura defensiva de la petición actual. */
 final class Peticion
 {
     public const LIMITE_CUERPO = 1024;
@@ -25,7 +24,6 @@ final class Peticion
         return is_string($valor) ? trim($valor) : null;
     }
 
-    /** @return array<string, mixed> */
     public static function cuerpoJson(): array
     {
         $tipo = strtolower(trim(explode(';', (string) ($_SERVER['CONTENT_TYPE'] ?? ''))[0]));
@@ -33,7 +31,6 @@ final class Peticion
             throw HttpException::tipoNoSoportado();
         }
 
-        // Se lee un byte de más para detectar cuerpos que superan el límite.
         $crudo = file_get_contents('php://input', false, null, 0, self::LIMITE_CUERPO + 1);
         if ($crudo === false || strlen($crudo) > self::LIMITE_CUERPO) {
             throw HttpException::peticionInvalida('El cuerpo supera ' . self::LIMITE_CUERPO . ' bytes');
@@ -52,7 +49,6 @@ final class Peticion
         return $datos;
     }
 
-    /** No se confía en X-Forwarded-For: no hay proxy propio delante. */
     public static function ipOrigen(): string
     {
         $ip = $_SERVER['REMOTE_ADDR'] ?? '';

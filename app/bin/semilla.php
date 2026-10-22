@@ -6,10 +6,6 @@ use App\Bootstrap;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-// Crea los índices y registra (o rota el token de) un dispositivo.
-// Uso: docker compose exec web php bin/semilla.php [ID_DISPOSITIVO] [TOKEN]
-// Sin TOKEN se genera uno aleatorio. Solo se guarda su sha256.
-
 $id = $argv[1] ?? 'ARDUINO_LAB_01';
 $token = $argv[2] ?? bin2hex(random_bytes(24));
 

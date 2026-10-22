@@ -7,13 +7,8 @@ namespace App\Http;
 use DateTimeInterface;
 use DateTimeZone;
 
-/** Envoltura única del contrato: { ok: true, data } o { ok: false, error }. */
 final class JsonResponse
 {
-    /**
-     * @param array<string, mixed>|null $cuerpo
-     * @param array<string, string> $cabeceras
-     */
     private function __construct(
         private readonly int $estado,
         private readonly ?array $cuerpo,
@@ -21,7 +16,6 @@ final class JsonResponse
     ) {
     }
 
-    /** @param array<string, mixed> $data */
     public static function ok(array $data, int $estado = 200): self
     {
         return new self($estado, ['ok' => true, 'data' => $data]);
@@ -32,10 +26,6 @@ final class JsonResponse
         return new self(204, null);
     }
 
-    /**
-     * @param array<string, string> $campos
-     * @param array<string, string> $cabeceras
-     */
     public static function error(int $estado, string $codigo, string $mensaje, array $campos = [], array $cabeceras = []): self
     {
         $error = ['codigo' => $codigo, 'mensaje' => $mensaje];
@@ -51,7 +41,6 @@ final class JsonResponse
         return self::error($e->estado(), $e->codigo(), $e->getMessage(), $e->campos(), $e->cabeceras());
     }
 
-    /** ISO 8601 en UTC: 2026-10-25T10:15:12Z */
     public static function fecha(?DateTimeInterface $fecha): ?string
     {
         if ($fecha === null) {
@@ -68,7 +57,6 @@ final class JsonResponse
         return $this->estado;
     }
 
-    /** @return array<string, mixed>|null */
     public function cuerpo(): ?array
     {
         return $this->cuerpo;

@@ -27,7 +27,6 @@ final class MensajeRepository
         $this->coleccion = $mongo->coleccion(self::COLECCION);
     }
 
-    /** insertOne: el mensaje nace en PENDIENTE. */
     public function guardar(Mensaje $mensaje): Mensaje
     {
         $resultado = $this->coleccion->insertOne([
@@ -48,10 +47,6 @@ final class MensajeRepository
         return $mensaje->conId((string) $resultado->getInsertedId());
     }
 
-    /**
-     * PENDIENTE → PROCESANDO en una sola operación atómica: toma el más antiguo y lo asigna
-     * al dispositivo. Con find + updateOne por separado, dos requests podrían tomar el mismo.
-     */
     public function tomarSiguientePendiente(Dispositivo $dispositivo): ?Mensaje
     {
         $doc = $this->coleccion->findOneAndUpdate(
@@ -70,10 +65,6 @@ final class MensajeRepository
         return $doc === null ? null : $this->aMensaje($doc);
     }
 
-    /**
-     * PROCESANDO → EMITIDO con updateOne. El filtro exige el estado y el dispositivo dueño,
-     * así que la verificación y el cambio ocurren en la misma operación.
-     */
     public function confirmarEmision(ObjectId $id, Dispositivo $dispositivo): Mensaje
     {
         $resultado = $this->coleccion->updateOne(
@@ -99,11 +90,6 @@ final class MensajeRepository
         return $this->aMensaje($doc);
     }
 
-    /**
-     * Historial para el dashboard, del más nuevo al más antiguo.
-     *
-     * @return list<Mensaje>
-     */
     public function listarHistorial(int $limite = self::LIMITE_HISTORIAL, ?EstadoMensaje $estado = null): array
     {
         $filtro = $estado === null ? [] : ['estado' => $estado->value];
@@ -120,7 +106,6 @@ final class MensajeRepository
         return $mensajes;
     }
 
-    /** @param array<string, mixed> $doc */
     private function aMensaje(array $doc): Mensaje
     {
         return Mensaje::reconstituir(
@@ -130,9 +115,7 @@ final class MensajeRepository
             EstadoMensaje::from((string) $doc['estado']),
             (string) ($doc['ip_origen'] ?? ''),
             MongoAdapter::fecha($doc['fechas']['creacion']),
-            MongoAdapter::fecha($doc['fechas']['procesando'] ?? null),
             MongoAdapter::fecha($doc['fechas']['emision'] ?? null),
-            isset($doc['dispositivo']['id']) ? (string) $doc['dispositivo']['id'] : null,
         );
     }
 }

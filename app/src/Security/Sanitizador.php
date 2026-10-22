@@ -10,10 +10,6 @@ use App\Http\HttpException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Driver\Exception\InvalidArgumentException as ObjectIdInvalido;
 
-/**
- * Reglas de validación del servidor (sección 8.1 de la guía). El servidor es la autoridad;
- * el frontend replica estas reglas solo para dar retroalimentación inmediata.
- */
 final class Sanitizador
 {
     private const TRANSLITERACION = [
@@ -31,12 +27,6 @@ final class Sanitizador
         'ç' => 'C', 'Ç' => 'C',
     ];
 
-    /**
-     * Valida el cuerpo de POST /api/mensaje.php y junta los errores de todos los campos.
-     *
-     * @param array<string, mixed> $cuerpo
-     * @return array{texto: string, velocidad: Velocidad}
-     */
     public static function nuevoMensaje(array $cuerpo): array
     {
         $campos = [];
@@ -64,7 +54,6 @@ final class Sanitizador
 
     public static function texto(mixed $valor): string
     {
-        // 1. Solo string; un arreglo u objeto es una petición mal formada.
         if ($valor === null) {
             throw HttpException::validacion(['mensaje' => 'El mensaje es obligatorio']);
         }
@@ -72,24 +61,19 @@ final class Sanitizador
             throw HttpException::peticionInvalida('El campo mensaje debe ser texto');
         }
 
-        // 2. Quitar caracteres de control y no imprimibles. null = UTF-8 inválido.
         $texto = preg_replace('/\p{C}/u', '', $valor);
         if ($texto === null) {
             throw HttpException::validacion(['mensaje' => 'El mensaje no es UTF-8 válido']);
         }
 
-        // 3. Acentos y eñe a su letra base.
         $texto = strtr($texto, self::TRANSLITERACION);
 
-        // 4. Mayúsculas, trim y espacios colapsados.
         $texto = (string) preg_replace('/ {2,}/', ' ', trim(strtoupper($texto)));
 
-        // 5. Solo lo que existe en la fuente: ASCII imprimible 0x20–0x7E.
         if (preg_match('/[^\x20-\x7E]/', $texto) === 1) {
             throw HttpException::validacion(['mensaje' => 'El mensaje contiene caracteres no permitidos']);
         }
 
-        // 6. Longitud después de normalizar.
         $longitud = strlen($texto);
         if ($longitud < 1 || $longitud > Mensaje::LONGITUD_MAXIMA) {
             throw HttpException::validacion([
@@ -113,10 +97,6 @@ final class Sanitizador
             ?? throw HttpException::validacion(['velocidad' => 'Valores permitidos: lenta, media, rapida']);
     }
 
-    /**
-     * Anti inyección NoSQL: un id[$ne]= llega como arreglo y se rechaza aquí; nunca se pasa
-     * entrada del usuario directo a un filtro.
-     */
     public static function objectId(mixed $valor): ObjectId
     {
         if (!is_string($valor) || preg_match('/^[a-f0-9]{24}$/i', $valor) !== 1) {
@@ -130,10 +110,8 @@ final class Sanitizador
         }
     }
 
-    /** @return array<string, string> */
     private static function camposDe(HttpException $e): array
     {
-        // Un error de tipo (400) no se acumula: la petición está mal formada.
         if ($e->estado() !== 422) {
             throw $e;
         }

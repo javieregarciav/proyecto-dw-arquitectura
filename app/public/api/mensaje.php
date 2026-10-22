@@ -10,7 +10,6 @@ use App\Security\Sanitizador;
 
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
-// POST /api/mensaje.php — crea un mensaje en PENDIENTE (lo usa el formulario).
 Bootstrap::iniciar()->ejecutar(static function (Bootstrap $app): JsonResponse {
     Peticion::exigirMetodo('POST');
     $entrada = Sanitizador::nuevoMensaje(Peticion::cuerpoJson());

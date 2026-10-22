@@ -16,10 +16,6 @@ use DateTimeZone;
 use ErrorException;
 use Throwable;
 
-/**
- * Punto de arranque de cada archivo de public/: configura errores, cabeceras de seguridad
- * y entrega las dependencias ya armadas.
- */
 final class Bootstrap
 {
     private ?MongoAdapter $mongo = null;
@@ -27,11 +23,9 @@ final class Bootstrap
     private ?DispositivoRepository $dispositivos = null;
 
     private function __construct(
-        private readonly string $entorno,
         private readonly string $mongoUri,
         private readonly string $mongoDb,
         private readonly DateTimeZone $zonaHoraria,
-        private readonly bool $depuracion,
     ) {
     }
 
@@ -40,7 +34,6 @@ final class Bootstrap
         date_default_timezone_set('UTC');
         ini_set('display_errors', '0');
 
-        // Cualquier warning o notice se vuelve excepción: nada de respuestas a medias.
         set_error_handler(static function (int $nivel, string $mensaje, string $archivo, int $linea): bool {
             if ((error_reporting() & $nivel) === 0) {
                 return false;
@@ -53,11 +46,9 @@ final class Bootstrap
         }
 
         return new self(
-            self::env('APP_ENV', 'local'),
             self::env('MONGO_URI', 'mongodb://mongo:27017'),
             self::env('MONGO_DB', 'iot_led'),
             new DateTimeZone(self::env('APP_TZ', 'America/Guatemala')),
-            self::env('LOG_LEVEL', 'info') === 'debug',
         );
     }
 
@@ -69,12 +60,6 @@ final class Bootstrap
         header('Referrer-Policy: no-referrer');
     }
 
-    /**
-     * Ejecuta un endpoint y traduce cualquier excepción a la envoltura de error del contrato.
-     * El detalle técnico va al log del servidor; el cliente nunca ve un stack trace.
-     *
-     * @param callable(self): JsonResponse $accion
-     */
     public function ejecutar(callable $accion): void
     {
         try {
@@ -96,9 +81,6 @@ final class Bootstrap
     public function registrarError(Throwable $e): void
     {
         error_log(sprintf('[%s] %s en %s:%d', $e::class, $e->getMessage(), $e->getFile(), $e->getLine()));
-        if ($this->depuracion) {
-            error_log($e->getTraceAsString());
-        }
     }
 
     public function mongo(): MongoAdapter
@@ -121,15 +103,9 @@ final class Bootstrap
         return new AutenticadorDispositivo($this->dispositivos());
     }
 
-    /** Zona horaria para mostrar fechas (el almacenamiento siempre es UTC). */
     public function zonaHoraria(): DateTimeZone
     {
         return $this->zonaHoraria;
-    }
-
-    public function esProduccion(): bool
-    {
-        return $this->entorno === 'produccion';
     }
 
     private static function env(string $nombre, string $porDefecto): string

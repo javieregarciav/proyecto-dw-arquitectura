@@ -10,7 +10,6 @@ enum Velocidad: string
     case Media  = 'media';
     case Rapida = 'rapida';
 
-    /** Milisegundos por columna; el simulador y el Arduino usan el mismo valor. */
     public function ms(): int
     {
         return match ($this) {

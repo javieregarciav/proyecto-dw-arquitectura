@@ -8,7 +8,6 @@ use App\Http\Peticion;
 
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
-// GET /api/dispositivo.php — el Arduino toma el PENDIENTE más antiguo y lo pasa a PROCESANDO.
 Bootstrap::iniciar()->ejecutar(static function (Bootstrap $app): JsonResponse {
     Peticion::exigirMetodo('GET');
     $dispositivo = $app->autenticador()->autenticar(
@@ -21,7 +20,6 @@ Bootstrap::iniciar()->ejecutar(static function (Bootstrap $app): JsonResponse {
         return JsonResponse::sinContenido();
     }
 
-    // Sin htmlspecialchars(): el Arduino no es un navegador. La protección fue la validación de entrada.
     return JsonResponse::ok([
         'id'           => $mensaje->id(),
         'mensaje'      => $mensaje->texto(),

@@ -26,7 +26,6 @@ final class DispositivoRepository
         return $doc === null ? null : $this->aDispositivo($doc);
     }
 
-    /** @return list<Dispositivo> */
     public function listar(): array
     {
         $dispositivos = [];
@@ -42,7 +41,6 @@ final class DispositivoRepository
         $this->coleccion->updateOne(['_id' => $id], ['$set' => ['ultimo_contacto' => new UTCDateTime()]]);
     }
 
-    /** Alta o rotación de token. Solo se guarda el hash. */
     public function registrar(string $id, string $token): void
     {
         $this->coleccion->updateOne(
@@ -55,7 +53,6 @@ final class DispositivoRepository
         );
     }
 
-    /** @param array<string, mixed> $doc */
     private function aDispositivo(array $doc): Dispositivo
     {
         return new Dispositivo(

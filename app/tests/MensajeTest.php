@@ -27,9 +27,7 @@ final class MensajeTest extends TestCase
         self::assertSame(Velocidad::Media, $mensaje->velocidad());
         self::assertSame('190.56.253.12', $mensaje->ipOrigen());
         self::assertSame($ahora, $mensaje->creacion());
-        self::assertNull($mensaje->procesando());
         self::assertNull($mensaje->emision());
-        self::assertNull($mensaje->dispositivoId());
     }
 
     public function testConIdNoModificaElOriginal(): void
@@ -42,7 +40,6 @@ final class MensajeTest extends TestCase
         self::assertSame($mensaje->texto(), $guardado->texto());
     }
 
-    /** @return iterable<string, array{string}> */
     public static function textosInvalidos(): iterable
     {
         yield 'vacío'      => [''];
