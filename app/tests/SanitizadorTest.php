@@ -38,6 +38,7 @@ final class SanitizadorTest extends TestCase
         yield '51 caracteres'       => [str_repeat('x', 51)];
         yield 'emoji'               => ['hola 😀'];
         yield 'fuera de la fuente'  => ['こんにちは'];
+        yield 'fuera del español'   => ['façade'];
         yield 'espacio no separable' => ["hola\u{00A0}mundo"];
         yield 'UTF-8 inválido'      => ["hola \xC3\x28"];
         yield 'ausente'             => [null];
@@ -84,12 +85,12 @@ final class SanitizadorTest extends TestCase
         self::assertArrayHasKey('velocidad', $e->campos());
     }
 
-    public function testNuevoMensajeJuntaLosErroresDeTodosLosCampos(): void
+    public function testNuevoMensajeReportaElPrimerCampoInvalido(): void
     {
         $e = $this->capturar(static fn () => Sanitizador::nuevoMensaje(['mensaje' => '', 'velocidad' => 'turbo']));
 
         self::assertSame(422, $e->estado());
-        self::assertSame(['mensaje', 'velocidad'], array_keys($e->campos()));
+        self::assertSame(['mensaje'], array_keys($e->campos()));
     }
 
     public function testNuevoMensajeValido(): void

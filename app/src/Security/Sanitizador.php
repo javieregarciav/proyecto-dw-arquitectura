@@ -8,48 +8,24 @@ use App\Domain\Mensaje;
 use App\Domain\Velocidad;
 use App\Http\HttpException;
 use MongoDB\BSON\ObjectId;
-use MongoDB\Driver\Exception\InvalidArgumentException as ObjectIdInvalido;
 
 final class Sanitizador
 {
     private const TRANSLITERACION = [
-        'á' => 'A', 'à' => 'A', 'ä' => 'A', 'â' => 'A', 'ã' => 'A',
-        'Á' => 'A', 'À' => 'A', 'Ä' => 'A', 'Â' => 'A', 'Ã' => 'A',
-        'é' => 'E', 'è' => 'E', 'ë' => 'E', 'ê' => 'E',
-        'É' => 'E', 'È' => 'E', 'Ë' => 'E', 'Ê' => 'E',
-        'í' => 'I', 'ì' => 'I', 'ï' => 'I', 'î' => 'I',
-        'Í' => 'I', 'Ì' => 'I', 'Ï' => 'I', 'Î' => 'I',
-        'ó' => 'O', 'ò' => 'O', 'ö' => 'O', 'ô' => 'O', 'õ' => 'O',
-        'Ó' => 'O', 'Ò' => 'O', 'Ö' => 'O', 'Ô' => 'O', 'Õ' => 'O',
-        'ú' => 'U', 'ù' => 'U', 'ü' => 'U', 'û' => 'U',
-        'Ú' => 'U', 'Ù' => 'U', 'Ü' => 'U', 'Û' => 'U',
+        'á' => 'A', 'Á' => 'A',
+        'é' => 'E', 'É' => 'E',
+        'í' => 'I', 'Í' => 'I',
+        'ó' => 'O', 'Ó' => 'O',
+        'ú' => 'U', 'Ú' => 'U', 'ü' => 'U', 'Ü' => 'U',
         'ñ' => 'N', 'Ñ' => 'N',
-        'ç' => 'C', 'Ç' => 'C',
     ];
 
     public static function nuevoMensaje(array $cuerpo): array
     {
-        $campos = [];
-        $texto = null;
-        $velocidad = null;
-
-        try {
-            $texto = self::texto($cuerpo['mensaje'] ?? null);
-        } catch (HttpException $e) {
-            $campos += self::camposDe($e);
-        }
-
-        try {
-            $velocidad = self::velocidad($cuerpo['velocidad'] ?? null);
-        } catch (HttpException $e) {
-            $campos += self::camposDe($e);
-        }
-
-        if ($texto === null || $velocidad === null) {
-            throw HttpException::validacion($campos);
-        }
-
-        return ['texto' => $texto, 'velocidad' => $velocidad];
+        return [
+            'texto'     => self::texto($cuerpo['mensaje'] ?? null),
+            'velocidad' => self::velocidad($cuerpo['velocidad'] ?? null),
+        ];
     }
 
     public static function texto(mixed $valor): string
@@ -103,19 +79,6 @@ final class Sanitizador
             throw HttpException::peticionInvalida('El id no es un ObjectId válido');
         }
 
-        try {
-            return new ObjectId($valor);
-        } catch (ObjectIdInvalido) {
-            throw HttpException::peticionInvalida('El id no es un ObjectId válido');
-        }
-    }
-
-    private static function camposDe(HttpException $e): array
-    {
-        if ($e->estado() !== 422) {
-            throw $e;
-        }
-
-        return $e->campos();
+        return new ObjectId($valor);
     }
 }
