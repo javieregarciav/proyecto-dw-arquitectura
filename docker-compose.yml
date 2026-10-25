@@ -12,7 +12,6 @@ services:
     volumes:
       - ./app/src:/var/www/html/src
       - ./app/public:/var/www/html/public
-      - ./app/tests:/var/www/html/tests
       - ./app/bin:/var/www/html/bin
     depends_on:
       mongo:
