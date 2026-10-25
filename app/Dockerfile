@@ -1,7 +1,5 @@
 FROM php:8.3-apache
 
-ARG APP_ENV=local
-
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git unzip libssl-dev \
     && pecl install mongodb \
@@ -22,9 +20,7 @@ RUN a2enconf seguridad
 WORKDIR /var/www/html
 
 COPY composer.json composer.lock* ./
-RUN if [ "$APP_ENV" = "produccion" ]; then FLAGS="--no-dev"; else FLAGS=""; fi \
-    && composer install --no-interaction --prefer-dist --no-autoloader $FLAGS
+RUN composer install --no-interaction --prefer-dist --no-autoloader
 
 COPY . .
-RUN if [ "$APP_ENV" = "produccion" ]; then FLAGS="--no-dev"; else FLAGS=""; fi \
-    && composer dump-autoload --optimize $FLAGS
+RUN composer dump-autoload --optimize

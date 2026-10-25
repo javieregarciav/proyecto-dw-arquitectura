@@ -40,12 +40,12 @@ final class Dispositivo
         return '****' . ($this->sufijoToken ?? '');
     }
 
-    public function enLinea(?DateTimeImmutable $ahora = null): bool
+    public function enLinea(): bool
     {
         if ($this->ultimoContacto === null) {
             return false;
         }
-        $ahora ??= new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $ahora = new DateTimeImmutable('now', new DateTimeZone('UTC'));
 
         return $ahora->getTimestamp() - $this->ultimoContacto->getTimestamp() < self::SEGUNDOS_EN_LINEA;
     }
@@ -53,11 +53,6 @@ final class Dispositivo
     public function id(): string
     {
         return $this->id;
-    }
-
-    public function activo(): bool
-    {
-        return $this->activo;
     }
 
     public function ultimoContacto(): ?DateTimeImmutable

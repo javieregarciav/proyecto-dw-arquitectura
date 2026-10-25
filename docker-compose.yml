@@ -2,8 +2,6 @@ services:
   web:
     build:
       context: ./app
-      args:
-        APP_ENV: ${APP_ENV:-local}
     ports:
       - "8080:80"
     env_file:

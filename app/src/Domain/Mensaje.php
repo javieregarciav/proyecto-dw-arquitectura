@@ -27,7 +27,6 @@ final class Mensaje
         string $texto,
         Velocidad $velocidad,
         string $ipOrigen,
-        ?DateTimeImmutable $ahora = null,
     ): self {
         $longitud = strlen($texto);
         if ($longitud < 1 || $longitud > self::LONGITUD_MAXIMA) {
@@ -43,7 +42,7 @@ final class Mensaje
             $velocidad,
             EstadoMensaje::Pendiente,
             $ipOrigen,
-            $ahora ?? new DateTimeImmutable('now', new DateTimeZone('UTC')),
+            new DateTimeImmutable('now', new DateTimeZone('UTC')),
         );
     }
 

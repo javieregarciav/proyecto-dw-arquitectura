@@ -21,11 +21,7 @@ final class AutenticadorDispositivo
         }
 
         $dispositivo = $this->dispositivos->buscar($id);
-        if ($dispositivo === null) {
-            hash_equals(str_repeat('0', 64), Dispositivo::hashToken($token));
-            throw HttpException::tokenInvalido();
-        }
-        if (!$dispositivo->aceptaToken($token)) {
+        if ($dispositivo === null || !$dispositivo->aceptaToken($token)) {
             throw HttpException::tokenInvalido();
         }
 

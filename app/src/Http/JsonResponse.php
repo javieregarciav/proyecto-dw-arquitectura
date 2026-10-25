@@ -52,16 +52,6 @@ final class JsonResponse
             ->format('Y-m-d\TH:i:s\Z');
     }
 
-    public function estado(): int
-    {
-        return $this->estado;
-    }
-
-    public function cuerpo(): ?array
-    {
-        return $this->cuerpo;
-    }
-
     public function enviar(): void
     {
         http_response_code($this->estado);
